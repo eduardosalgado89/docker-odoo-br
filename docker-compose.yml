@@ -1,0 +1,28 @@
+version: '3'
+services:
+  odoo-db:
+    container_name: ${DB_CONTAINER_NAME}
+    image: postgres:10
+    restart: unless-stopped
+    volumes:
+      - odoo-db-data:${PGDATA}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGDATA: ${PGDATA}
+  odoo-web:
+    depends_on:
+      - odoo-db
+    container_name: ${ODOO_CONTAINER_NAME}
+    image: odoo:12.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8069:8069"
+      - "127.0.0.1:8071:8071"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ${LOCAL_CONF_DIR}:/etc/odoo
+      - ${LOCAL_ADDONS_DIR}:/mnt/extra-addons
+volumes:
+  odoo-web-data:
+  odoo-db-data:
